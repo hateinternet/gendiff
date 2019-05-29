@@ -7,4 +7,4 @@ study in [hexlet.io](https://ru.hexlet.io/)
 
 ## Setup & Usage
 
-[![asciicast](https://asciinema.org/a/c80rmi2kBXT2GeFywsxGwOWbr.svg)](https://asciinema.org/a/c80rmi2kBXT2GeFywsxGwOWbr)
+[![asciicast](https://asciinema.org/a/6OCooak08wEuGgHciH61NweKr.svg)](https://asciinema.org/a/6OCooak08wEuGgHciH61NweKr)
