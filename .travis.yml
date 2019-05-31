@@ -7,3 +7,6 @@ node_js:
 script:
   - make lint
   - make test
+
+notifications:
+email: false
