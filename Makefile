@@ -7,6 +7,9 @@ start:
 publish:
 	npm publish
 
+test-piblish:
+	npm publish --dry-run
+
 lint:
 	npx eslint .
 

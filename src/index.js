@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-import fs from 'fs';
+import { readFileSync } from 'fs';
+import { extname } from 'path';
 import { has } from 'lodash';
+import getParser from './parsers';
 
-const getDiff = (fileData1, fileData2) => {
+const compareData = (fileData1, fileData2) => {
   const keys = Object.keys({ ...fileData1, ...fileData2 });
   const str = keys.reduce((acc, el) => {
     if (has(fileData1, el) && has(fileData2, el)) {
@@ -26,9 +28,9 @@ const getDiff = (fileData1, fileData2) => {
 };
 
 const genDiff = (filepath1, filepath2) => {
-  const fileData1 = JSON.parse(fs.readFileSync(filepath1), 'utf-8');
-  const fileData2 = JSON.parse(fs.readFileSync(filepath2), 'utf-8');
-  return getDiff(fileData1, fileData2);
+  const fileData1 = getParser(extname(filepath1))(readFileSync(filepath1, 'utf-8'));
+  const fileData2 = getParser(extname(filepath2))(readFileSync(filepath2, 'utf-8'));
+  return compareData(fileData1, fileData2);
 };
 
 export default genDiff;
