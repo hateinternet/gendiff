@@ -1,6 +1,6 @@
 {
   "name": "gendiff-hateinternet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Utility to find differences in configuration files",
   "main": "dist/index.js",
   "bin": {
@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "commander": "^2.20.0",
+    "ini": "^1.3.5",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.11"
   }
