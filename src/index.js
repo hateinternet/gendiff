@@ -1,36 +1,122 @@
 #!/usr/bin/env node
 import { readFileSync } from 'fs';
 import { extname } from 'path';
-import { has } from 'lodash';
-import getParser from './parsers';
+import { has, find, isObject } from 'lodash';
+import selectParser from './parsers';
 
-const compareData = (fileData1, fileData2) => {
-  const keys = Object.keys({ ...fileData1, ...fileData2 });
-  const str = keys.reduce((acc, el) => {
-    if (has(fileData1, el) && has(fileData2, el)) {
-      const value1 = fileData1[el];
-      const value2 = fileData2[el];
-      if (value1 === value2) {
-        return `${acc}\n   ${el}:${value1}`;
-      }
-      const firstStr = `+ ${el}:${value2}`;
-      const secondStr = `- ${el}:${value1}`;
-      return `${acc}\n ${firstStr}\n ${secondStr}`;
-    }
-    if (has(fileData1, el) && !has(fileData2, el)) {
-      const value = fileData1[el];
-      return `${acc}\n - ${el}:${value}`;
-    }
-    const value = fileData2[el];
-    return `${acc}\n + ${el}:${value}`;
-  }, '');
-  return `{${str}\n}`;
+const nodeTypes = [
+  {
+    type: 'added',
+    check: (data1, data2, key) => !has(data1, key),
+    make: (data1, data2, key) => ({
+      name: key,
+      operation: 'added',
+      newValue: data2[key],
+    }),
+  },
+  {
+    type: 'removed',
+    check: (data1, data2, key) => !has(data2, key),
+    make: (data1, data2, key) => ({
+      name: key,
+      operation: 'removed',
+      oldValue: data1[key],
+    }),
+  },
+  {
+    type: 'joined',
+    check: (data1, data2, key) => isObject(data1[key]) && isObject(data2[key]),
+    make: (data1, data2, key, fn) => ({
+      name: key,
+      operation: 'joined',
+      children: fn(data1[key], data2[key]),
+    }),
+  },
+  {
+    type: 'changed',
+    check: (data1, data2, key) => data1[key] !== data2[key],
+    make: (data1, data2, key) => ({
+      name: key,
+      operation: 'changed',
+      oldValue: data1[key],
+      newValue: data2[key],
+    }),
+  },
+  {
+    type: 'unchanged',
+    check: (data1, data2, key) => data1[key] === data2[key],
+    make: (data1, data2, key) => ({
+      name: key,
+      operation: 'unchanged',
+      value: data1[key],
+    }),
+  },
+];
+
+const generateAST = (data1, data2) => {
+  const keys = Object.keys({ ...data1, ...data2 });
+  return keys.map((key) => {
+    const node = find(nodeTypes, ({ check }) => check(data1, data2, key));
+    return node.make(data1, data2, key, generateAST);
+  });
+};
+const addTabs = depth => '  '.repeat(depth);
+
+const stringify = (value, depth) => {
+  if (!isObject(value)) {
+    return value;
+  }
+  const jsonStr = JSON.stringify(value, null, 2).replace(/"/g, '');
+  const formattedStr = jsonStr.split('\n').map((el, i) => (i === 0 ? el : `${addTabs(depth + 1)}${el}`)).join('\n');
+  return formattedStr;
 };
 
-const genDiff = (filepath1, filepath2) => {
-  const fileData1 = getParser(extname(filepath1))(readFileSync(filepath1, 'utf-8'));
-  const fileData2 = getParser(extname(filepath2))(readFileSync(filepath2, 'utf-8'));
-  return compareData(fileData1, fileData2);
+const makeString = (name, value, depth, sign) => `${addTabs(depth)}${sign}${name}: ${stringify(value, depth)}`;
+
+const renderMethods = {
+  added: (node, depth) => {
+    const { name, newValue } = node;
+    const str = makeString(name, newValue, depth, '+ ');
+    return `${str}`;
+  },
+  removed: (node, depth) => {
+    const { name, oldValue } = node;
+    const str = makeString(name, oldValue, depth, '- ');
+    return `${str}`;
+  },
+  changed: (node, depth) => {
+    const { name, oldValue, newValue } = node;
+    const str1 = makeString(name, newValue, depth, '+ ');
+    const str2 = makeString(name, oldValue, depth, '- ');
+    return `${str1}\n${str2}`;
+  },
+  unchanged: (node, depth) => {
+    const { name, value } = node;
+    const str = makeString(name, value, depth, '  ');
+    return `${str}`;
+  },
+  joined: (node, depth, fn) => {
+    const { name, children } = node;
+    const deepNodes = fn(children, depth + 1);
+    return `${addTabs(depth)}  ${name}: ${deepNodes}`;
+  },
+};
+
+const rendering = (ast, depth = 0) => {
+  const tree = ast.reduce((str, node) => {
+    const { operation } = node;
+    const renderMethod = renderMethods[operation];
+    return `${str}\n${renderMethod(node, depth, rendering)}`;
+  }, '');
+  return `{${tree}\n${addTabs(depth)}}`;
+};
+
+const genDiff = (path1, path2) => {
+  const parsedData1 = selectParser(extname(path1))(readFileSync(path1, 'utf-8'));
+  const parsedData2 = selectParser(extname(path2))(readFileSync(path2, 'utf-8'));
+  const ast = generateAST(parsedData1, parsedData2);
+  const diff = rendering(ast);
+  return diff;
 };
 
 export default genDiff;
