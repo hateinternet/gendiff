@@ -7,7 +7,6 @@ import selectFormatter from './formatters';
 
 const nodeTypes = [
   {
-    type: 'added',
     check: (data1, data2, key) => !has(data1, key),
     make: (data1, data2, key) => ({
       name: key,
@@ -16,7 +15,6 @@ const nodeTypes = [
     }),
   },
   {
-    type: 'removed',
     check: (data1, data2, key) => !has(data2, key),
     make: (data1, data2, key) => ({
       name: key,
@@ -25,7 +23,6 @@ const nodeTypes = [
     }),
   },
   {
-    type: 'joined',
     check: (data1, data2, key) => isObject(data1[key]) && isObject(data2[key]),
     make: (data1, data2, key, fn) => ({
       name: key,
@@ -34,7 +31,6 @@ const nodeTypes = [
     }),
   },
   {
-    type: 'changed',
     check: (data1, data2, key) => data1[key] !== data2[key],
     make: (data1, data2, key) => ({
       name: key,
@@ -44,7 +40,6 @@ const nodeTypes = [
     }),
   },
   {
-    type: 'unchanged',
     check: (data1, data2, key) => data1[key] === data2[key],
     make: (data1, data2, key) => ({
       name: key,
