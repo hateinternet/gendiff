@@ -2,7 +2,7 @@ import { isObject } from 'lodash';
 
 const addTabs = depth => '  '.repeat(depth);
 
-const stringify = (value, depth) => {
+const toString = (value, depth) => {
   if (!isObject(value)) {
     return value;
   }
@@ -11,7 +11,7 @@ const stringify = (value, depth) => {
   return formattedStr;
 };
 
-const makeString = (name, value, depth, sign) => `${addTabs(depth)}${sign}${name}: ${stringify(value, depth)}`;
+const makeString = (name, value, depth, sign) => `${addTabs(depth)}${sign}${name}: ${toString(value, depth)}`;
 
 const renderMethods = {
   added: (node, depth) => {
