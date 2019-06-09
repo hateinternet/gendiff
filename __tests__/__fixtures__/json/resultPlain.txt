@@ -1,0 +1,5 @@
+Property 'host' hasn't been changed. It's equal to: hexlet.io
+Property 'timeout' was updated. From 50 to 20
+Property 'proxy' was removed
+Property 'follow' was removed
+Property 'verbose' was added with value: true
