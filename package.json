@@ -1,6 +1,6 @@
 {
   "name": "gendiff-hateinternet",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Utility to find differences in configuration files",
   "keywords": ["diff", "filediff", "gendiff"],
   "main": "dist/index.js",
