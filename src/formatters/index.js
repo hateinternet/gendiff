@@ -1,11 +1,10 @@
 import toPlain from './plain';
 import toTree from './tree';
-import toJson from './json';
 
 const formatTypes = {
   plain: toPlain,
   tree: toTree,
-  json: toJson,
+  json: JSON.stringify,
 };
 
 export default format => ast => formatTypes[format](ast);

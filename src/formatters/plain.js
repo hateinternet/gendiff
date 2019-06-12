@@ -28,14 +28,14 @@ const renderMethods = {
   joined: (node, path, fn) => {
     const { name, children } = node;
     const deepNodes = fn(children, [...path, name]);
-    return `${deepNodes}`;
+    return deepNodes;
   },
 };
 
 const rendering = (ast, path = []) => {
   const plainText = ast.reduce((str, node) => {
-    const { operation } = node;
-    const renderMethod = renderMethods[operation];
+    const { type } = node;
+    const renderMethod = renderMethods[type];
     return `${str}\n${renderMethod(node, path, rendering)}`;
   }, '');
   return plainText.trim();

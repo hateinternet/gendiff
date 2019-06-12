@@ -1,8 +1,12 @@
 {
   "name": "gendiff-hateinternet",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Utility to find differences in configuration files",
-  "keywords": ["diff", "filediff", "gendiff"],
+  "keywords": [
+    "diff",
+    "filediff",
+    "gendiff"
+  ],
   "main": "dist/index.js",
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
@@ -25,6 +29,7 @@
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
     "@babel/node": "^7.4.5",
+    "@babel/plugin-proposal-pipeline-operator": "^7.3.2",
     "@babel/preset-env": "^7.4.5",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
