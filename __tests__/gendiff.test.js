@@ -1,13 +1,12 @@
 import fs from 'fs';
+import { capitalize } from 'lodash';
 import genDiff from '../src';
-
-const makeUpperFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
 
 const compare = (type, format, deep = false) => {
   const entryPoint = './__tests__/__fixtures__/';
   const filepath1 = `${entryPoint}${type}/before${deep ? 'Deep' : ''}.${type}`;
   const filepath2 = `${entryPoint}${type}/after${deep ? 'Deep' : ''}.${type}`;
-  const expectedPath = `${entryPoint}${type}/result${makeUpperFirstLetter(format)}${deep ? 'Deep' : ''}.txt`;
+  const expectedPath = `${entryPoint}${type}/result${capitalize(format)}${deep ? 'Deep' : ''}.txt`;
 
   const actual = genDiff(filepath1, filepath2, format);
   const expected = fs.readFileSync(expectedPath, 'utf-8');
