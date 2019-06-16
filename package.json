@@ -1,6 +1,6 @@
 {
   "name": "gendiff-hateinternet",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Utility to find differences in configuration files",
   "keywords": [
     "diff",

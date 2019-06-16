@@ -7,7 +7,7 @@ start:
 publish:
 	npm publish
 
-test-piblish:
+test-publish:
 	npm publish --dry-run
 
 lint:
